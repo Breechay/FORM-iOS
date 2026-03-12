@@ -682,81 +682,54 @@ struct FORMDrawer: View {
 
                         sectionDivider()
 
-                        // ── Section 2: In this chapter ───────────────────
-                        sectionHeader(shell.selected.label.uppercased())
+                        // ── Section 2: Practice ──────────────────────────
+                        sectionHeader("Practice")
 
-                        // Continue row — URL-backed reading memory.
-                        // Hidden for native chapters where shell URL is not authoritative.
-                        if !isNativeChapter,
-                           shell.hasMeaningfulLastRead(for: shell.selected),
-                           let lastURL   = shell.state(for: shell.selected).lastReadURL,
-                           let lastTitle = shell.state(for: shell.selected).lastReadTitle,
-                           let url = URL(string: lastURL) {
-                            Button {
-                                onNavigate(shell.selected, url)
-                                dismiss()
-                            } label: {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text("continue")
-                                        .font(.system(size: 12, weight: .regular))
-                                        .foregroundColor(.formInkFaint)
-                                        .tracking(1.5)
-                                    Text(lastTitle)
-                                        .font(.system(size: 16, weight: .light))
-                                        .foregroundColor(.formInk)
-                                        .lineLimit(2)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 24)
-                                .padding(.top, 14)
-                                .padding(.bottom, 16)
-                            }
-                            .buttonStyle(.plain)
-                            thinLine()
+                        // Root Practice row — reset chapter to ledger
+                        drawerRow(
+                            label: "Practice",
+                            isActive: shell.selected == .home && nativeNav.practicePage == nil
+                        ) {
+                            nativeNav.resetToRoot(for: .home)
+                            onNavigate(.home, FORMDestination.home.rootURL)
+                            dismiss()
                         }
 
-                        // Chapter pages — native chapters use NativeNavStore,
-                        // URL chapters use onNavigate as before.
-                        let pages = shell.selected.drawerPages
-                        if shell.selected == .home {
-                            // Practice chapter: all sub-pages are native state
-                            ForEach(PracticePage.allCases, id: \.self) { page in
-                                drawerRow(
-                                    label:    page.rawValue,
-                                    isActive: nativeNav.practicePage == page
-                                ) {
-                                    nativeNav.navigate(to: page)
-                                    onNavigate(shell.selected, shell.selected.rootURL)
-                                    dismiss()
-                                }
+                        // Practice sub-pages — always visible, use NativeNavStore
+                        ForEach(PracticePage.allCases, id: \.self) { page in
+                            drawerRow(
+                                label: page.rawValue,
+                                isActive: shell.selected == .home && nativeNav.practicePage == page
+                            ) {
+                                nativeNav.navigate(to: page)
+                                onNavigate(.home, FORMDestination.home.rootURL)
+                                dismiss()
                             }
-                        } else if shell.selected == .reference {
-                            // Reference chapter: sub-pages are native state
-                            ForEach(ReferencePage.allCases, id: \.self) { page in
-                                drawerRow(
-                                    label:    page.rawValue,
-                                    isActive: nativeNav.referencePage == page
-                                ) {
-                                    nativeNav.navigate(to: page)
-                                    onNavigate(shell.selected, shell.selected.rootURL)
-                                    dismiss()
-                                }
+                        }
+
+                        // ── Section 3: Reference ────────────────────────
+                        sectionHeader("Reference")
+
+                        // Root Reference row — reset chapter to ledger
+                        drawerRow(
+                            label: "Reference",
+                            isActive: shell.selected == .reference && nativeNav.referencePage == nil
+                        ) {
+                            nativeNav.resetToRoot(for: .reference)
+                            onNavigate(.reference, FORMDestination.reference.rootURL)
+                            dismiss()
+                        }
+
+                        // Reference sub-pages — always visible, use NativeNavStore
+                        ForEach(ReferencePage.allCases, id: \.self) { page in
+                            drawerRow(
+                                label: page.rawValue,
+                                isActive: shell.selected == .reference && nativeNav.referencePage == page
+                            ) {
+                                nativeNav.navigate(to: page)
+                                onNavigate(.reference, FORMDestination.reference.rootURL)
+                                dismiss()
                             }
-                        } else if pages.count > 1 {
-                            ForEach(pages, id: \.label) { page in
-                                drawerRow(label: page.label, isActive: false) {
-                                    onNavigate(shell.selected, page.url)
-                                    dismiss()
-                                }
-                            }
-                        } else if pages.count == 1 {
-                            // Single page chapter — just show a quiet dash
-                            Text("—")
-                                .font(.system(size: 14, weight: .regular))
-                                .foregroundColor(.formInkFaint)
-                                .padding(.horizontal, 24)
-                                .padding(.vertical, 12)
                         }
 
                         sectionDivider()
@@ -3908,28 +3881,415 @@ struct FORMCyclesNativeView: View {
 }
 
 struct FORMTheWorkNativeView: View {
+
+    private let anchorLine = "What we practice is not speed. It is repeatable quality."
+
+    private let workIsText =
+        "The work is not just completing sessions. It is learning to execute them correctly. That means holding the right effort, preserving form under load, and finishing with quality intact. The session is the container. The work is how you inhabit it."
+
+    private let workIsNotText =
+        "The work is not proving fitness, chasing exhaustion, or collecting hard days. A session completed incorrectly does not become more valuable because it felt intense. The method rewards precision, not theatrics. The athlete improves by repeating correct work long enough for it to become ordinary."
+
+    private let practiceRows: [(label: String, purpose: String, cadence: String)] = [
+        ("Restraint",  "Holding the assigned effort instead of forcing more.",                      "every week"),
+        ("Rhythm",     "Finding repeatable timing in stride, breath, and attention.",               "every session"),
+        ("Economy",    "Doing the same work at lower mechanical and metabolic cost.",               "over time"),
+        ("Composure",  "Keeping form and decision-making clean under discomfort.",                  "key sessions"),
+        ("Completion", "Finishing organized, not depleted or dramatic.",                            "always"),
+    ]
+
+    private let doctrine = "Quality repeated becomes capacity."
+    private let cue      = "Run the session. Do not perform the session."
+
     var body: some View {
         FORMReadingFrame {
-            stubHeader(title: "The Work", anchor: "What we are actually practicing.")
+            pageHeader
+            workIsBlock
+            practiceRowsBlock
+            workIsNotBlock
+            closingDoctrine
             Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · The Work".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("The Work")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var workIsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What the work is")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(workIsText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — structured rows
+    private var practiceRowsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What we are practicing")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(practiceRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.purpose)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.cadence)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var workIsNotBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What the work is not")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(workIsNotText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
         }
     }
 }
 
 struct FORMInterruptionsNativeView: View {
+
+    private let anchorLine = "The system is built by what you protect from disruption."
+
+    private let interruptionMeaningText =
+        "An interruption is anything that breaks continuity without improving the work. Missed sleep, chaotic pacing, emotional overreach, excess intensity, inconsistent fueling, and social noise all count. The issue is not that disruption happens. The issue is pretending it has no training cost."
+
+    private let interruptionActionsText =
+        "Do not dramatize the disruption and do not try to repay it immediately. Return to structure as quickly and quietly as possible. One compromised day does not ruin a cycle. Escalation does. The correction is usually smaller than the reaction wants it to be."
+
+    private let interruptionRows: [(label: String, description: String, cost: String)] = [
+        ("Poor sleep",          "Reduces coordination, mood, and recovery quality.",                 "high cost"),
+        ("Overpaced easy days", "Turns recovery sessions into moderate fatigue.",                    "common"),
+        ("Underfueling",        "Lowers session quality and slows adaptation.",                      "accumulative"),
+        ("Emotional theatrics", "Spends energy that should remain in the work.",                     "avoidable"),
+        ("Inconsistency",       "Breaks the compounding effect of correct repetition.",              "structural"),
+    ]
+
+    private let doctrine = "Protect continuity."
+    private let cue      = "Return to the work before you return to ambition."
+
     var body: some View {
         FORMReadingFrame {
-            stubHeader(title: "Interruptions", anchor: "What breaks the system and what to do.")
+            pageHeader
+            interruptionMeaningBlock
+            interruptionRowsBlock
+            interruptionActionsBlock
+            closingDoctrine
             Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · Interruptions".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("Interruptions")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var interruptionMeaningBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What interruption means")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(interruptionMeaningText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly rows
+    private var interruptionRowsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "Common interruptions")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(interruptionRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.description)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.cost)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var interruptionActionsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What to do when interrupted")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(interruptionActionsText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
         }
     }
 }
 
 struct FORMTheFieldNativeView: View {
+
+    private let anchorLine = "The environment shapes what the work becomes."
+
+    private let fieldDefinitionText =
+        "The field is the environment the training lives inside. It includes the route, the weather, the group, the culture, the timing, and the emotional tone surrounding the work. Training does not happen in abstraction. It happens in conditions. Good conditions make correct work easier to repeat."
+
+    private let fieldWhyItMattersText =
+        "A misaligned field can make good training difficult and bad training feel normal. The athlete adapts not only to the session, but to the conditions around it. A strong field protects quality, reduces distortion, and lets the work remain the center of attention."
+
+    private let fieldRows: [(label: String, description: String, timing: String)] = [
+        ("Clarity",   "The athlete knows what the session is asking.",              "before start"),
+        ("Calm",      "The environment reduces unnecessary activation.",            "always"),
+        ("Rhythm",    "Timing and flow support repeatable execution.",              "during work"),
+        ("Restraint", "No surges, proving, or social distortion.",                  "group standard"),
+        ("Return",    "The field leaves the athlete better organized after.",       "end state"),
+    ]
+
+    private let doctrine = "The field teaches the body what to expect."
+    private let cue      = "Build conditions that make correctness easier."
+
     var body: some View {
         FORMReadingFrame {
-            stubHeader(title: "The Field", anchor: "The environment this method lives in.")
+            pageHeader
+            fieldDefinitionBlock
+            fieldRowsBlock
+            fieldWhyItMattersBlock
+            closingDoctrine
             Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · The Field".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("The Field")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var fieldDefinitionBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What the field is")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(fieldDefinitionText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly rows
+    private var fieldRowsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What the field should provide")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(fieldRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.description)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.timing)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var fieldWhyItMattersBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "Why it matters")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(fieldWhyItMattersText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
         }
     }
 }
