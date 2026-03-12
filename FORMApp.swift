@@ -2441,6 +2441,7 @@ struct FORMThresholdNativeView: View {
     private let cue        = "Stay under theatrics. Finish the rep, not the clock."
 
     @State private var showingSessionCard = false
+    @State private var didTapTitle        = false
 
     var body: some View {
         FORMReadingFrame {
@@ -2457,29 +2458,32 @@ struct FORMThresholdNativeView: View {
     // ── Page header ──────────────────────────────────────────────────────────
 
     private var pageHeader: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Button(action: { didTapTitle = true }) {
+            VStack(alignment: .leading, spacing: 0) {
 
-            Text(cycleLabel.uppercased())
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(NativePalette.faint)
-                .tracking(1.4)
-                .padding(.top, 24)
-                .padding(.bottom, 20)
+                Text(cycleLabel.uppercased())
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(NativePalette.faint)
+                    .tracking(1.4)
+                    .padding(.top, 24)
+                    .padding(.bottom, 20)
 
-            Text("Threshold")
-                .font(.custom("Georgia", size: 36))
-                .foregroundColor(NativePalette.titleInk)
-                .tracking(0.2)
-                .padding(.bottom, 8)
+                Text("Threshold")
+                    .font(.custom("Georgia", size: 36))
+                    .foregroundColor(NativePalette.titleInk)
+                    .tracking(0.2)
+                    .padding(.bottom, 8)
 
-            Text(anchorLine)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundColor(NativePalette.secondary.opacity(0.88))
-                .tracking(0.2)
-                .padding(.bottom, 36)
+                Text(anchorLine)
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(NativePalette.secondary.opacity(0.88))
+                    .tracking(0.2)
+                    .padding(.bottom, 36)
 
-            PageRule(opacity: 0.42)
+                PageRule(opacity: 0.42)
+            }
         }
+        .buttonStyle(.plain)
     }
 
     // ── Session steps ────────────────────────────────────────────────────────
@@ -2571,6 +2575,7 @@ struct FORMLongRunNativeView: View {
     private let cue        = "Inhabit the effort. Finish organized, not depleted."
 
     @State private var showingSessionCard = false
+    @State private var didTapTitle        = false
 
     var body: some View {
         FORMReadingFrame {
@@ -2587,29 +2592,32 @@ struct FORMLongRunNativeView: View {
     // ── Page header ──────────────────────────────────────────────────────────
 
     private var pageHeader: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        Button(action: { didTapTitle = true }) {
+            VStack(alignment: .leading, spacing: 0) {
 
-            Text(cycleLabel.uppercased())
-                .font(.system(size: 12, weight: .medium))
-                .foregroundColor(NativePalette.faint)
-                .tracking(1.4)
-                .padding(.top, 24)
-                .padding(.bottom, 20)
+                Text(cycleLabel.uppercased())
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(NativePalette.faint)
+                    .tracking(1.4)
+                    .padding(.top, 24)
+                    .padding(.bottom, 20)
 
-            Text("Long Run")
-                .font(.custom("Georgia", size: 36))
-                .foregroundColor(NativePalette.titleInk)
-                .tracking(0.2)
-                .padding(.bottom, 8)
+                Text("Long Run")
+                    .font(.custom("Georgia", size: 36))
+                    .foregroundColor(NativePalette.titleInk)
+                    .tracking(0.2)
+                    .padding(.bottom, 8)
 
-            Text(anchorLine)
-                .font(.system(size: 15, weight: .regular))
-                .foregroundColor(NativePalette.secondary.opacity(0.88))
-                .tracking(0.2)
-                .padding(.bottom, 36)
+                Text(anchorLine)
+                    .font(.system(size: 15, weight: .regular))
+                    .foregroundColor(NativePalette.secondary.opacity(0.88))
+                    .tracking(0.2)
+                    .padding(.bottom, 36)
 
-            PageRule(opacity: 0.42)
+                PageRule(opacity: 0.42)
+            }
         }
+        .buttonStyle(.plain)
     }
 
     // ── Run structure ────────────────────────────────────────────────────────
@@ -4130,6 +4138,144 @@ struct FORMInterruptionsNativeView: View {
                 .padding(.bottom, 4)
             PageRule(opacity: 0.32)
             Text(interruptionActionsText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
+        }
+    }
+}
+
+struct FORMSpeedNativeView: View {
+
+    private let anchorLine = "Speed is coordination under higher force."
+
+    private let speedBuildsText =
+        "Speed work is not primarily about moving fast. It is about learning to coordinate the body under higher mechanical demand. Short, controlled efforts train rhythm, posture, and elastic return while fatigue remains low. When speed work is executed correctly, the athlete leaves the session feeling sharper rather than exhausted."
+
+    private let speedFitsText =
+        "Speed sessions appear sparingly inside the method. They support threshold and long-run development by improving coordination and economy. Because the sessions are short and precise, they should never compromise the rest of the week. The athlete should leave feeling organized and ready for the next day of training."
+
+    private let speedRows: [(label: String, detail: String, focus: String)] = [
+        ("Coordination",           "Synchronizing arms, stride timing, and ground contact.",           "primary"),
+        ("Elastic return",         "Using the body's natural spring rather than pushing harder.",      "mechanical"),
+        ("Posture under force",    "Maintaining tall alignment when speed increases.",                 "structural"),
+        ("Neuromuscular sharpness","Teaching the nervous system faster firing patterns.",              "neurological"),
+        ("Restraint",              "Stopping the work before fatigue distorts form.",                  "discipline"),
+    ]
+
+    private let doctrine = "Speed reveals coordination."
+    private let cue      = "Precision matters more than intensity."
+
+    var body: some View {
+        FORMReadingFrame {
+            pageHeader
+            speedBuildsBlock
+            speedRowsBlock
+            speedFitsBlock
+            closingDoctrine
+            Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · Speed".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("Speed")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var speedBuildsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What speed work builds")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(speedBuildsText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly rows
+    private var speedRowsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What speed sessions train")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(speedRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.detail)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.focus)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var speedFitsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "How speed fits the system")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(speedFitsText)
                 .font(.system(size: 16, weight: .regular))
                 .foregroundColor(NativePalette.bodyInk)
                 .lineSpacing(6)
