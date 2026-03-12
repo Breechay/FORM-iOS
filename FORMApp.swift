@@ -4302,6 +4302,281 @@ struct FORMSpeedNativeView: View {
     }
 }
 
+struct FORMSessionsNativeView: View {
+
+    private let anchorLine = "Each session has a role. The week works when the roles stay clear."
+
+    private let sessionsAreText =
+        "A session is not just a workout. It is a specific training demand placed inside the week for a reason. Threshold extends controlled discomfort. Long runs build endurance and economy. Easy days absorb load. Speed sharpens coordination. The system works when each session remains itself and does not drift into another role."
+
+    private let sessionsFailText =
+        "Sessions fail when they lose their identity. Easy days become moderate. Threshold becomes racing. Long runs become performances. Speed becomes fatigue. The athlete improves not by making every day hard, but by preserving the purpose of each session long enough for adaptation to accumulate."
+
+    private let coreSessionRows: [(label: String, detail: String, focus: String)] = [
+        ("Threshold", "Raises the ceiling for sustained work.",                     "quality"),
+        ("Long Run",  "Builds endurance, rhythm, and durability over time.",       "aerobic"),
+        ("Easy",      "Supports recovery while extending the base.",               "support"),
+        ("Speed",     "Sharpens coordination under higher force.",                 "mechanical"),
+        ("Flush",     "Clears fatigue without adding new stress.",                 "recovery"),
+    ]
+
+    private let doctrine = "The role of the session determines the value of the session."
+    private let cue      = "Protect the purpose before chasing the feeling."
+
+    var body: some View {
+        FORMReadingFrame {
+            pageHeader
+            sessionsAreBlock
+            coreSessionsBlock
+            sessionsFailBlock
+            closingDoctrine
+            Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · Sessions".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("Sessions")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var sessionsAreBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What sessions are")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(sessionsAreText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly rows
+    private var coreSessionsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "Core session types")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(coreSessionRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.detail)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.focus)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var sessionsFailBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "How sessions fail")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(sessionsFailText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
+        }
+    }
+}
+
+struct FORMShoesNativeView: View {
+
+    private let anchorLine = "Each shoe has a role. The rotation works when the roles stay clear."
+
+    private let rotationIsText =
+        "A shoe rotation is not about collecting options. It is about assigning the right tool to the right session. Easy shoes protect rhythm and reduce unnecessary cost. Session shoes sharpen feel and support higher-quality work. Race shoes are used sparingly so they remain specific. The rotation works when each shoe keeps its role."
+
+    private let rotationUseText =
+        "The point of the rotation is not novelty. It is preserving signal. The athlete should know what each shoe is for and avoid blurring roles without reason. Daily shoes absorb repetition. Session shoes support precision. Race shoes stay rare enough to remain meaningful. Clarity keeps the rotation useful."
+
+    private let rotationRows: [(label: String, detail: String, role: String)] = [
+        ("Cloudmonster 2",       "Easy and regulation runs.",              "daily"),
+        ("Endorphin Speed",      "Threshold and steady long-run work.",    "session"),
+        ("Alphafly 3",           "Reserved for race-specific use.",        "race"),
+        ("Brooks Adrenaline GTS","Support option in rotation.",            "alternate"),
+    ]
+
+    private let doctrine = "The shoe should match the demand."
+    private let cue      = "Use the tool for the work, not for the feeling."
+
+    var body: some View {
+        FORMReadingFrame {
+            pageHeader
+            rotationIsBlock
+            rotationRowsBlock
+            rotationUseBlock
+            closingDoctrine
+            Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · Shoes".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("Shoes")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var rotationIsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What a rotation is")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(rotationIsText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly rows
+    private var rotationRowsBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "Current rotation")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(rotationRows, id: \.label) { row in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(row.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(row.detail)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(row.role)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var rotationUseBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "How to use the rotation")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(rotationUseText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
+        }
+    }
+}
+
 struct FORMTheFieldNativeView: View {
 
     private let anchorLine = "The environment shapes what the work becomes."
