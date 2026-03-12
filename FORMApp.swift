@@ -1652,10 +1652,10 @@ enum ReferencePage: String, CaseIterable {
 
     var descriptor: String {
         switch self {
-        case .recovery: return "How the body rebuilds between sessions."
-        case .fueling:  return "What to eat and when around training."
-        case .sleep:    return "The most underused tool in the system."
-        case .pacing:   return "How effort translates to sustainable speed."
+        case .recovery: return "How the body actually absorbs the work between hard efforts."
+        case .fueling:  return "How energy timing shapes session quality and long-term durability."
+        case .sleep:    return "Why sleep is the most overlooked performance tool in the system."
+        case .pacing:   return "How restraint and rhythm decide what speed you can actually hold."
         }
     }
 }
@@ -1752,11 +1752,11 @@ private struct FORMPracticeLedgerView: View {
         let t = Self.todayIndex
         return [
             ("Mon", "Z2 cross-train or rest",  "+ structural work",                     t == 0),
-            ("Tue", "Threshold",               "5:50 AM · Flamingo Park",               t == 1),
+            ("Tue", "Threshold",               "Controlled discomfort, extended.",      t == 1),
             ("Wed", "Easy Run",                "45 min · easy pace throughout",         t == 2),
             ("Thu", "Easy + Touch",            "45 min · 6 × 200 relaxed at end",      t == 3),
             ("Fri", "Flush",                   "45 min · easy · prepare for Saturday",  t == 4),
-            ("Sat", "Long Run",                "5:30 AM · Hideout · 95 min",           t == 5),
+            ("Sat", "Long Run",                "Organization over impatience.",        t == 5),
             ("Sun", "Easy",                    "40 min · absorb the week",             t == 6),
         ]
     }
@@ -2042,46 +2042,81 @@ private let stepDetails: [String: StepDetail] = [
     "Warm-up": StepDetail(
         title: "Warm-Up",
         purpose: "Prepare the body for threshold effort. Raise core temperature, mobilize the joints, wake up the fast-twitch fibers.",
-        execution: "First 12 minutes easy and conversational. Final 3 minutes build gradually — not a sprint, just a steady escalation toward threshold. Arrive at the first rep feeling ready, not already spent.",
-        notes: "If the legs feel flat at the start, that is normal. Stay patient. The body will come around."
+        execution: "15 minutes total: first 12 minutes easy and conversational, final 3 minutes a gradual build toward threshold — arrive ready, not rushed.",
+        notes: "If the legs feel flat or heavy, stay patient and let the warm-up do its work. Avoid adding extra speed or drills that turn this into its own workout."
     ),
     "Threshold": StepDetail(
         title: "Threshold",
         purpose: "Extend the duration you can sustain at high aerobic effort. This is the ceiling-raising work.",
-        execution: "Effort should feel controlled — hard but not desperate. You should be able to speak a short phrase but not hold a conversation. Each rep same quality. Start the first one as if you have two more to run.",
-        notes: "Float between reps is recovery, not rest. Keep moving. Threshold pace is not race pace — it sits just below the line where you'd start accumulating debt."
+        execution: "3 × 10 minutes at controlled discomfort — breathing working, posture calm, last rep the same quality as the first.",
+        notes: "If you could not imagine running a fourth rep at the end, the effort was too high. Treat threshold as repeatable work, not a race effort, and let the floats do their job."
     ),
     "Float": StepDetail(
         title: "Float",
         purpose: "Active recovery between threshold reps. Flush, regroup, maintain forward momentum.",
-        execution: "2 minutes, conversational. Keep running — do not walk. The body is clearing lactate. You should feel noticeably better by the end of the float.",
-        notes: "If you cannot recover enough in 2 minutes to begin the next rep with quality, the previous rep was too fast."
+        execution: "2 minutes of very easy running between reps — keep moving forward while breathing returns toward conversational.",
+        notes: "If you need more than 2 minutes to restore quality, adjust the prior rep instead of stretching the float. The standard is starting each rep composed, not desperate."
     ),
     "Cool-down": StepDetail(
         title: "Cool-Down",
         purpose: "Return the body to baseline. Start the recovery process.",
-        execution: "Easy, genuinely easy. Heart rate coming down, breathing settling. No rushing. This is part of the session, not the end of it.",
-        notes: "10 minutes minimum. The cool-down is when the body begins to adapt. Don't skip it."
+        execution: "10 minutes of genuinely easy running — heart rate coming down, breathing settling, no rushing.",
+        notes: "Treat the cool-down as part of the work, not an optional extra. Stopping early or standing around stiffens what the run just organized."
     ),
     "Easy": StepDetail(
         title: "Easy",
         purpose: "Settle the run. Let the body find its rhythm before asking more of it.",
-        execution: "Start slow. Truly easy. Let the pace come to you rather than searching for it. The first miles of a long run are an investment, not a debt.",
-        notes: "If you feel flat at the start, that's fine. Patience here pays forward."
+        execution: "First 25 minutes truly easy — relaxed shoulders, light feet, let the pace come to you.",
+        notes: "If you feel impatient here, you're doing it correctly. This section protects the rest of the run from starting too fast."
     ),
     "Steady": StepDetail(
         title: "Steady",
         purpose: "Hold sustained aerobic effort. Train the body to maintain quality over time.",
-        execution: "Comfortably hard. Conversational with effort. You're building endurance by sustaining rhythm for the long middle section. Don't drift moderate and don't drift tempo.",
-        notes: "This is where long runs are built. Protect the rhythm."
+        execution: "Middle 45 minutes at steady aerobic effort — breathing present but smooth, rhythm locked in, no surges.",
+        notes: "If you cannot speak a full sentence, you have drifted too hard. Small terrain-driven pace changes are fine; big swings are not."
     ),
     "Close": StepDetail(
         title: "Close",
         purpose: "Finish organized, not depleted. Leave the run strong.",
-        execution: "Maintain effort from the middle — don't accelerate, don't collapse. The goal is to cross the end of the run in the same shape you started the steady section.",
-        notes: "A well-executed close means you could have run another 20 minutes. That's the standard."
+        execution: "Final 25 minutes at the same steady effort, letting focus sharpen while form stays identical.",
+        notes: "You should finish feeling organized with one small gear still available. If you are hanging on, the middle section was too hard."
     ),
 ]
+
+// ── Session Mode data ───────────────────────────────────────────────────────────
+
+private struct SessionModeBlock {
+    let label:     String
+    let structure: String
+    let cue:       String
+}
+
+private struct SessionModeSession {
+    let title:      String
+    let anchorLine: String
+    let blocks:     [SessionModeBlock]
+}
+
+private let thresholdSession = SessionModeSession(
+    title:      "Threshold",
+    anchorLine: "Controlled discomfort, extended.",
+    blocks: [
+        SessionModeBlock(label: "Warm-up",  structure: "15 min easy",           cue: "final 3 min build"),
+        SessionModeBlock(label: "Main Set", structure: "3 × 10 min threshold",  cue: "2 min float between reps"),
+        SessionModeBlock(label: "Cool-down",structure: "10 min easy",           cue: "let the system settle"),
+    ]
+)
+
+private let longRunSession = SessionModeSession(
+    title:      "Long Run",
+    anchorLine: "Organization over impatience.",
+    blocks: [
+        SessionModeBlock(label: "Opening", structure: "25 min easy",   cue: "start calm · let the pace come to you"),
+        SessionModeBlock(label: "Middle",  structure: "45 min steady", cue: "hold rhythm · smooth cadence throughout"),
+        SessionModeBlock(label: "Close",   structure: "25 min",        cue: "finish organized · maintain form under fatigue"),
+    ]
+)
+
 
 private struct FORMStepBlock: View {
     let number:    String
@@ -2207,6 +2242,130 @@ private struct FORMStepBlock: View {
     }
 }
 
+// ── Session Mode full-screen card ───────────────────────────────────────────────
+
+private struct SessionModeView: View {
+    let session:   SessionModeSession
+    let isLongRun: Bool
+
+    @State private var activeRep: Int = 1
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            Color.nativeCream.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 0) {
+
+                // Header
+                HStack {
+                    Button("Done") { dismiss() }
+                        .font(.system(size: 12, weight: .light))
+                        .foregroundColor(.formInkFaint)
+                    Spacer()
+                }
+                .padding(.horizontal, 26)
+                .padding(.top, 16)
+                .padding(.bottom, 6)
+
+                VStack(alignment: .leading, spacing: 0) {
+                    Text(session.title)
+                        .font(.custom("Georgia", size: 36))
+                        .foregroundColor(Color.nativeTitleInk)
+                        .tracking(0.2)
+                        .padding(.top, 16)
+                        .padding(.bottom, 8)
+
+                    Text(session.anchorLine)
+                        .font(.system(size: 15, weight: .regular))
+                        .foregroundColor(Color.nativeSecondary.opacity(0.88))
+                        .tracking(0.2)
+                        .padding(.bottom, 24)
+
+                    PageRule(opacity: 0.42)
+
+                    // Blocks
+                    ZStack(alignment: .leading) {
+                        if isLongRun {
+                            HStack(alignment: .top, spacing: 0) {
+                                Rectangle()
+                                    .fill(Color.nativeRule.opacity(0.5))
+                                    .frame(width: 1)
+                                    .padding(.top, 36)
+                                    .padding(.bottom, 20)
+                                    .padding(.leading, 2)
+                                Spacer()
+                            }
+                        }
+
+                        VStack(alignment: .leading, spacing: 0) {
+                            ForEach(Array(session.blocks.enumerated()), id: \.offset) { index, block in
+                                blockView(block: block, isFirst: index == 0)
+                            }
+
+                            PageRule(opacity: 0.35)
+                                .padding(.top, 8)
+                        }
+                    }
+                    .padding(.top, 8)
+
+                    Spacer(minLength: 32)
+                }
+                .padding(.horizontal, 26)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func blockView(block: SessionModeBlock, isFirst: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageRule(opacity: 0.35)
+                .padding(.top, isFirst ? 24 : 18)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(block.label.uppercased())
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(Color.nativeFaint)
+                    .tracking(1.4)
+
+                Text(block.structure)
+                    .font(.system(size: 26, weight: .regular).monospacedDigit())
+                    .foregroundColor(Color.nativeTitleInk)
+
+                Text(block.cue)
+                    .font(.system(size: 13, weight: .regular))
+                    .foregroundColor(Color.nativeSecondary.opacity(0.85))
+                    .tracking(0.1)
+
+                if session.title == "Threshold" && block.label == "Main Set" {
+                    HStack(spacing: 0) {
+                        ForEach(1...3, id: \.self) { rep in
+                            Button(action: { activeRep = rep }) {
+                                Text("Rep \(rep)")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(
+                                        rep == activeRep
+                                        ? Color.nativeBodyInk
+                                        : Color.nativeFaint
+                                    )
+                            }
+                            .buttonStyle(.plain)
+
+                            if rep < 3 {
+                                Text(" · ")
+                                    .font(.system(size: 12, weight: .regular))
+                                    .foregroundColor(Color.nativeFaint)
+                            }
+                        }
+                    }
+                    .padding(.top, 4)
+                }
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 18)
+        }
+    }
+}
+
 // ── Step detail sheet ─────────────────────────────────────────────────────────
 private struct StepDetailSheet: View {
     let detail: StepDetail
@@ -2308,12 +2467,17 @@ struct FORMThresholdNativeView: View {
     private let doctrine   = "The effort is the practice."
     private let cue        = "Stay under theatrics. Finish the rep, not the clock."
 
+    @State private var showingSessionCard = false
+
     var body: some View {
         FORMReadingFrame {
             pageHeader
             stepsBlock
             closingDoctrine
             Spacer(minLength: 56)
+        }
+        .fullScreenCover(isPresented: $showingSessionCard) {
+            SessionModeView(session: thresholdSession, isLongRun: false)
         }
     }
 
@@ -2357,28 +2521,36 @@ struct FORMThresholdNativeView: View {
                 .padding(.top, 20)
                 .padding(.bottom, 4)
 
+            Button(action: { showingSessionCard = true }) {
+                Text("Open session card")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(NativePalette.faint.opacity(0.9))
+                    .padding(.bottom, 8)
+            }
+            .buttonStyle(FORMPressStyle())
+
             FORMStepBlock(
                 number:    "15 min",
                 label:     "Warm-up",
-                qualifier: "final 3 min build",
+                qualifier: "final 3 min build · arrive ready, not rushed",
                 rank:      .support
             )
             FORMStepBlock(
                 number:    "3 × 10 min",
                 label:     "Threshold",
-                qualifier: "threshold effort",
+                qualifier: "controlled discomfort · same quality each rep",
                 rank:      .main
             )
             FORMStepBlock(
                 number:    "2 min",
                 label:     "Float",
-                qualifier: "conversational recovery",
+                qualifier: "conversational recovery · keep moving forward",
                 rank:      .subordinate
             )
             FORMStepBlock(
                 number:    "10 min",
                 label:     "Cool-down",
-                qualifier: "",
+                qualifier: "let the system settle",
                 rank:      .support
             )
 
@@ -2425,12 +2597,17 @@ struct FORMLongRunNativeView: View {
     private let doctrine   = "Duration reveals form."
     private let cue        = "Inhabit the effort. Finish organized, not depleted."
 
+    @State private var showingSessionCard = false
+
     var body: some View {
         FORMReadingFrame {
             pageHeader
             runStructure
             closingDoctrine
             Spacer(minLength: 56)
+        }
+        .fullScreenCover(isPresented: $showingSessionCard) {
+            SessionModeView(session: longRunSession, isLongRun: true)
         }
     }
 
@@ -2474,24 +2651,32 @@ struct FORMLongRunNativeView: View {
                 .padding(.top, 20)
                 .padding(.bottom, 4)
 
+            Button(action: { showingSessionCard = true }) {
+                Text("Open session card")
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(NativePalette.faint.opacity(0.9))
+                    .padding(.bottom, 8)
+            }
+            .buttonStyle(FORMPressStyle())
+
             FORMStepBlock(
                 number:    "25 min",
                 label:     "Easy",
-                qualifier: "settle the run · let the pace come to you",
+                qualifier: "start calm · let the pace come to you",
                 rank:      .normal,
                 layout:    .effortLead
             )
             FORMStepBlock(
                 number:    "45 min",
                 label:     "Steady",
-                qualifier: "hold rhythm · smooth cadence throughout",
+                qualifier: "build rhythm · hold the effort without forcing",
                 rank:      .normal,
                 layout:    .effortLead
             )
             FORMStepBlock(
                 number:    "25 min",
                 label:     "Close",
-                qualifier: "finish organized · maintain form under fatigue",
+                qualifier: "finish organized · same form, slightly less margin",
                 rank:      .normal,
                 layout:    .effortLead
             )
