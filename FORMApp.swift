@@ -3770,10 +3770,139 @@ struct FORMStrengthNativeView: View {
 // ─────────────────────────────────────────────────────────────────────────────
 
 struct FORMCyclesNativeView: View {
+
+    private let anchorLine = "Progression works by phase, not by urgency."
+
+    private let cycleDefinitionText =
+        "A training cycle is a planned arc of weeks that builds one quality at a time. Each cycle has a dominant purpose — base, threshold capacity, economy, or sharpening — and everything in the week serves that purpose. Trying to build all qualities simultaneously produces mediocre results across the board. The method chooses one and builds around it."
+
+    private let cycleChangeText =
+        "Volume, intensity, specificity, and recovery demand all shift from cycle to cycle. Durability carries high volume and low intensity. Compression raises both. Economy reduces volume and raises specificity. Sharpening cuts volume sharply and raises intensity. Competition holds the minimum needed to stay sharp. Each phase prepares the next."
+
+    private let standardArc: [(label: String, purpose: String, duration: String)] = [
+        ("Durability",  "Build aerobic base and structural resilience.",   "4–6 wk"),
+        ("Compression", "Increase load. Introduce quality work.",          "3–4 wk"),
+        ("Economy",     "Refine efficiency and form at speed.",            "3–4 wk"),
+        ("Sharpening",  "Reduce volume. Increase intensity. Peak.",        "2–3 wk"),
+        ("Competition", "Race and recover. Protect freshness.",            "variable"),
+    ]
+
+    private let doctrine = "Trust the sequence."
+    private let cue      = "Each cycle is preparation for the one that follows."
+
     var body: some View {
         FORMReadingFrame {
-            stubHeader(title: "Cycles", anchor: "How progression works over time.")
+            pageHeader
+            whatCycleBlock
+            standardArcBlock
+            cycleChangeBlock
+            closingDoctrine
             Spacer(minLength: 56)
+        }
+    }
+
+    private var pageHeader: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("Practice · Cycles".uppercased())
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(NativePalette.faint)
+                .tracking(1.4)
+                .padding(.top, 24)
+                .padding(.bottom, 20)
+            Text("Cycles")
+                .font(.custom("Georgia", size: 36))
+                .foregroundColor(NativePalette.titleInk)
+                .tracking(0.2)
+                .padding(.bottom, 8)
+            Text(anchorLine)
+                .font(.system(size: 15, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.88))
+                .tracking(0.2)
+                .padding(.bottom, 36)
+            PageRule(opacity: 0.42)
+        }
+    }
+
+    // Section 1 — editorial prose block
+    private var whatCycleBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What a cycle is")
+                .padding(.top, 24)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(cycleDefinitionText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    // Section 2 — scan-friendly standard arc rows
+    private var standardArcBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "Standard arc")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            ForEach(standardArc, id: \.label) { phase in
+                VStack(alignment: .leading, spacing: 0) {
+                    PageRule(opacity: 0.32)
+                    HStack(alignment: .firstTextBaseline) {
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text(phase.label)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(NativePalette.bodyInk)
+                            Text(phase.purpose)
+                                .font(.system(size: 12, weight: .regular))
+                                .foregroundColor(NativePalette.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 16)
+                        Spacer()
+                        Text(phase.duration)
+                            .font(.system(size: 12, weight: .regular))
+                            .foregroundColor(NativePalette.faint)
+                            .tracking(0.3)
+                    }
+                }
+            }
+            PageRule(opacity: 0.42)
+                .padding(.top, 2)
+        }
+    }
+
+    // Section 3 — editorial prose block
+    private var cycleChangeBlock: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            PageLabel(text: "What changes across cycles")
+                .padding(.top, 32)
+                .padding(.bottom, 4)
+            PageRule(opacity: 0.32)
+            Text(cycleChangeText)
+                .font(.system(size: 16, weight: .regular))
+                .foregroundColor(NativePalette.bodyInk)
+                .lineSpacing(6)
+                .padding(.top, 20)
+                .padding(.bottom, 24)
+            PageRule(opacity: 0.38)
+        }
+    }
+
+    private var closingDoctrine: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Spacer().frame(height: 60)
+            Text(doctrine)
+                .font(.system(size: 13, weight: .regular))
+                .foregroundColor(NativePalette.secondary.opacity(0.9))
+                .tracking(0.5)
+                .padding(.bottom, 16)
+            Text(cue)
+                .font(.system(size: 12, weight: .regular))
+                .foregroundColor(NativePalette.faint.opacity(0.82))
+                .padding(.bottom, 40)
+            PageRule(opacity: 0.35)
         }
     }
 }
